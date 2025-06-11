@@ -68,6 +68,7 @@ public class Main implements NativeMouseListener {
 		        	case HIGHLIGHT:
 		        		quickChangePos(hotkey, KeyEvent.VK_F11);
 	        			break;
+
 	        		default: break; // not possible but wtev
 	        	} 
 			}
