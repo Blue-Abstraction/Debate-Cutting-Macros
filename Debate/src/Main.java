@@ -46,34 +46,36 @@ public class Main implements NativeMouseListener {
 	@Override
     public void nativeMouseReleased(NativeMouseEvent e) {
 		//System.out.println(e.getButton());
-        if (e.getButton() == 4) {
-        	currentCycle--;
-        	
-    		newNotif("Current Mode: " + Mode.getMode(Math.abs(currentCycle % 3)));
-        } else if (e.getButton() == 5) {
-        	currentCycle++;
-        	
-    		newNotif("Current Mode: " + Mode.getMode(Math.abs(currentCycle % 3)));
-        } else if (e.getButton() == 3) {
-			try {
-				switch (Mode.getMode(Math.abs(currentCycle % 3))) {
-	        	case UNDERLINE:
-	        		quickChangePos(hotkey, KeyEvent.VK_F9);
-	    			break; 
-	        	case EMPHASIZE:
-	        		quickChangePos(hotkey, KeyEvent.VK_F10);
-	    			break;
-	        	case HIGHLIGHT:
-	        		quickChangePos(hotkey, KeyEvent.VK_F11);
-        			break;
-        			
-        		default: break; // not possible but wtev
-        	} 
-				} catch (InterruptedException e1) {
-				e1.printStackTrace();
+		try {
+	        if (e.getButton() == 4) {
+				robot.keyPress(KeyEvent.VK_CONTROL);
+				robot.keyPress(KeyEvent.VK_Z);
+				Thread.sleep(25);
+				robot.keyRelease(KeyEvent.VK_CONTROL);
+				robot.keyRelease(KeyEvent.VK_Z);
+			} else if (e.getButton() == 5) {
+	        	currentCycle++;
+	    		newNotif("Current Mode: " + Mode.getMode(Math.abs(currentCycle % 3)));
+
+	        } else if (e.getButton() == 3) {
+					switch (Mode.getMode(Math.abs(currentCycle % 3))) {
+		        	case UNDERLINE:
+		        		quickChangePos(hotkey, KeyEvent.VK_F9);
+		    			break; 
+		        	case EMPHASIZE:
+		        		quickChangePos(hotkey, KeyEvent.VK_F10);
+		    			break;
+		        	case HIGHLIGHT:
+		        		quickChangePos(hotkey, KeyEvent.VK_F11);
+	        			break;
+	        		default: break; // not possible but wtev
+	        	} 
 			}
-        }
-    }
+		} catch (InterruptedException e1) {
+		e1.printStackTrace();
+		}
+	}
+   
   
 	private void newNotif(String string) {
 	    Notify.Companion.create()
