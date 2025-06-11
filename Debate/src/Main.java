@@ -1,5 +1,8 @@
+import java.awt.MouseInfo;
 import java.awt.Robot;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.function.Consumer;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
@@ -13,6 +16,16 @@ public class Main implements NativeMouseListener {
 	
 	private static int currentCycle;
 	private static Robot robot;
+	private static double x, y;
+	private static Consumer<Integer> hotkey = (key) -> {
+		try {
+			robot.keyPress(key);
+			Thread.sleep(25);
+			robot.keyRelease(key);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	};
 	
 	Main() {
 		try {
@@ -45,19 +58,13 @@ public class Main implements NativeMouseListener {
 			try {
 				switch (Mode.getMode(Math.abs(currentCycle % 3))) {
 	        	case UNDERLINE:
-	        		robot.keyPress(KeyEvent.VK_F9);
-					Thread.sleep(25);
-	        		robot.keyRelease(KeyEvent.VK_F9);
-	    			break;
+	        		quickChangePos(hotkey, KeyEvent.VK_F9);
+	    			break; 
 	        	case EMPHASIZE:
-	        		robot.keyPress(KeyEvent.VK_F10);
-					Thread.sleep(25);
-	        		robot.keyRelease(KeyEvent.VK_F10);
+	        		quickChangePos(hotkey, KeyEvent.VK_F10);
 	    			break;
 	        	case HIGHLIGHT:
-	        		robot.keyPress(KeyEvent.VK_F11);
-					Thread.sleep(25);
-	        		robot.keyRelease(KeyEvent.VK_F11);
+	        		quickChangePos(hotkey, KeyEvent.VK_F11);
         			break;
         			
         		default: break; // not possible but wtev
@@ -71,9 +78,25 @@ public class Main implements NativeMouseListener {
 	private void newNotif(String string) {
 	    Notify.Companion.create()
         .text(string)
-        .theme(Theme.Companion.getDefaultDark())
+        .theme(Theme.Companion.getDefaultLight())
         .position(Position.CENTER)
         .hideAfter(1000)
         .showWarning();
+	}
+	
+	private void quickChangePos(Consumer<Integer> consumer, int key) throws InterruptedException {
+		x = MouseInfo.getPointerInfo().getLocation().x;
+		y = MouseInfo.getPointerInfo().getLocation().y;
+		
+		robot.mouseMove(50, (int) y);
+
+		robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+		Thread.sleep(25);
+		robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+
+		consumer.accept(key);
+		
+		
+		robot.mouseMove((int) x, (int) y);
 	}
 }
